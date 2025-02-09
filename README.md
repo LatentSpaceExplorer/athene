@@ -1,4 +1,4 @@
-# ATHENE: OSS AI Assistant
+# Athene: AI Assistant
 
 A voice-controlled AI assistant that can manage your tasks, read to you your clipboard content, and engage in natural conversations using LLMs.
 
