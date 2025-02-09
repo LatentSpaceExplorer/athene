@@ -1,0 +1,17 @@
+[project]
+name = "athene"
+version = "0.1.0"
+description = "A voice-controlled AI assistant powered by LLMs"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipykernel>=6.29.5",
+    "langchain>=0.3.18",
+    "langchain-groq>=0.2.4",
+    "kokoro-onnx>=0.4.2",
+    "onnxruntime-gpu>=1.20.1",
+    "soundfile>=0.13.1",
+    "sounddevice>=0.5.1",
+    "speechrecognition>=3.14.1",
+    "pyperclip>=1.9.0",
+]

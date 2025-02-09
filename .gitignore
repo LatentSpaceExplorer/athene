@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# environment files
+.env
+
+# kokoro models
+models/kokoro/
+
+# data files
+.data
+
+# temp files
+.out
+
+# temp files
+temp_recording.wav
+
