@@ -1,20 +1,22 @@
-# Athene: AI Assistant
+# Athene
 
-A voice-controlled AI assistant that can manage your tasks, read to you your clipboard content, and engage in natural conversations using LLMs.
+Athene is a voice-controlled AI assistant that can manage your tasks, read to you your clipboard content, and engage in natural conversations using LLMs.
 
 ## Features
 
-- Audio Input: Voice recognition and processing 
+- Voice recognition and processing 
 - Natural language task management with persistent storage
 - Text-to-speech responses using [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)
 - Read text from clipboard
 - General conversation
+- Modular plugin system for easy extension
 
 ## Prerequisites
 
 - Python 3.12 or higher
 - NVIDIA GPU with CUDA support (recommended)
 - Groq API key for LLM access
+
 
 ## Installation
 
@@ -52,11 +54,13 @@ uv run src/main.py
 
 - [ ] Add support alternative LLMs backends (e.g. OpenAI, local)
 - [ ] Voice activation by name (e.g. "Athene")
-- [ ] Reminders
-- [ ] Day planning
-- [ ] Habit tracking
-- [ ] Internet search
-- [ ] File reading
+- [ ] Recurring tasks
+- [ ] Additional plugins:
+  - [ ] Reminders
+  - [ ] Day planning
+  - [ ] Habit tracking
+  - [ ] Internet search
+  - [ ] File reading
 
 
 ## Technical Stack

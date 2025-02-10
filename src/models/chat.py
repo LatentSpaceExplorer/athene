@@ -1,36 +1,22 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
-# from langchain_core.tools import Tool
-from typing import List, Optional
-from pydantic import BaseModel, Field
-import pyperclip
-
-
-# Define Pydantic models for our tools
-class AddTask(BaseModel):
-    """Add a new task to the todo list."""
-    task_description: str = Field(..., description="The description of the task to add")
-    due_date: Optional[str] = Field(None, description="Optional due date for the task")
-
-class DeleteTask(BaseModel):
-    """Delete a task from the todo list."""
-    task_id: int = Field(..., description="The ID (1-based index) of the task to delete")
-
-class ListTasks(BaseModel):
-    """List all tasks in the todo list."""
-    pass
-
-class ReadClipboard(BaseModel):
-    """Read and process text from the clipboard."""
-    pass
+from typing import List, Type
+from src.plugins.base import Plugin
 
 class ChatModel:
-    def __init__(self, todo_manager):
+    def __init__(self, plugin_classes: List[Type[Plugin]]):
         self.llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
-        self.todo_manager = todo_manager
         
-        # Define tools properly using Tool class
-        self.tools = [AddTask, DeleteTask, ListTasks, ReadClipboard]
+        # Initialize plugins
+        self.plugins = {
+            plugin_class().name: plugin_class() 
+            for plugin_class in plugin_classes
+        }
+        
+        # Get tools from all plugins
+        self.tools = []
+        for plugin in self.plugins.values():
+            self.tools.extend(plugin.get_tools())
         
         # Bind tools to the LLM
         self.llm_with_tools = self.llm.bind_tools(self.tools)
@@ -52,54 +38,27 @@ class ChatModel:
         """
         
         self.prompt = ChatPromptTemplate.from_template(template)
-        
-    def _add_task(self, task_description: str, due_date: Optional[str] = None) -> str:
-
-        return self.todo_manager.add_todo(task_description, due_date)
-    
-    def _delete_task(self, task_id: int) -> str:
-        return self.todo_manager.remove_todo(task_id - 1)
-    
-    def _list_tasks(self) -> str:
-        print("[ChatModel] listing tasks")
-        return self.todo_manager.list_todos()
-    
-    def _read_clipboard(self) -> str:
-        text = pyperclip.paste()
-        if not text:
-            return "The clipboard is empty."
-        return f"Here's the text from your clipboard: {text}"
     
     async def get_response(self, text: str) -> str:
         try:
-            # Invoke the LLM with tools
             response = await self.llm_with_tools.ainvoke(
                 self.prompt.format_messages(user_input=text)
             )
-
-            print("[ChatModel] response: ", response)
             
-            # If there are tool calls, process them
+            # If the response contains tool calls, execute the tool
             if response.tool_calls:
-
                 tool_call = response.tool_calls[0]
-
                 tool_name = tool_call['name']
                 tool_args = tool_call['args']
-
-                # Execute the appropriate tool function
-                if tool_name == "AddTask":
-                    return self._add_task(**tool_args)
-                elif tool_name == "DeleteTask":
-                    return self._delete_task(**tool_args)
-                elif tool_name == "ListTasks":
-                    return self._list_tasks()
-                elif tool_name == "ReadClipboard":
-                    return self._read_clipboard()
+                
+                # Determine which plugin should handle the tool
+                for plugin in self.plugins.values():
+                    if any(tool.__name__ == tool_name for tool in plugin.get_tools()):
+                        return plugin.execute_tool(tool_name, **tool_args)
                 
                 return "I couldn't find the appropriate tool for that action."
             
-            # If no tool calls, return the regular response
+            # If the response doesn't contain tool calls, return the response
             return response.content or "I couldn't process that request."
             
         except Exception as e:
