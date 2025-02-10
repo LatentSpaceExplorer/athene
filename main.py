@@ -2,7 +2,7 @@ from src.gui.app import VoiceAssistantGUI
 from src.audio.recorder import AudioRecorder
 from src.audio.player import AudioPlayer
 from src.audio.speech import SpeechGenerator
-from src.models.chat import ChatModel
+from src.core.chat import ChatModel
 from src.plugins.todo_plugin import TodoPlugin
 from src.plugins.clipboard_plugin import ClipboardPlugin
 
