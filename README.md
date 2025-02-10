@@ -51,6 +51,7 @@ uv run src/main.py
 ## Planned Features
 
 - [ ] Add support alternative LLMs backends (e.g. OpenAI, local)
+- [ ] Voice activation by name (e.g. "Athene")
 - [ ] Reminders
 - [ ] Day planning
 - [ ] Habit tracking
