@@ -16,7 +16,7 @@ wheels/
 models/kokoro/
 
 # data files
-.data/
+data/
 
 # temp files
 temp_recording.wav

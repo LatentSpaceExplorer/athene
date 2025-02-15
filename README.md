@@ -41,7 +41,7 @@ uv sync
 5. Run the application:
 
 ```bash
-uv run src/main.py
+uv run ./athene.py
 ```
 
 ## Supported Commands

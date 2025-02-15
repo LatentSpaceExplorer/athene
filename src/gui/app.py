@@ -54,13 +54,13 @@ class VoiceAssistantGUI:
 
     async def process_recording(self):
         try:
-            # Save the recording
-            audio_file = self.recorder.save_recording()
-            print("[Recording] Saved audio file")
+            # Get audio data directly
+            audio_data = self.recorder.get_audio_data()
+            print("[Recording] Got audio data")
             
             try:
                 # Convert speech to text
-                text = self.recorder.transcribe(audio_file)
+                text = self.recorder.transcribe(audio_data)
                 print(f"[Speech Recognition] Detected text: {text}")
                 self.window.after(0, self.update_status, "Converting to text...")
                 

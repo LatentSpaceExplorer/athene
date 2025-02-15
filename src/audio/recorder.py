@@ -32,7 +32,11 @@ class AudioRecorder:
         sf.write(filename, recording, self.sample_rate)
         return filename
     
-    def transcribe(self, audio_file):
-        with sr.AudioFile(audio_file) as source:
-            audio = self.recognizer.record(source)
-            return self.recognizer.recognize_google(audio)
+    def get_audio_data(self):
+        recording = np.concatenate(self.recorded_data, axis=0)
+        # Convert to int16 format which is what speech_recognition expects
+        recording = (recording * 32767).astype(np.int16)
+        return sr.AudioData(recording.tobytes(), self.sample_rate, 2)
+    
+    def transcribe(self, audio_data):
+        return self.recognizer.recognize_google(audio_data)
