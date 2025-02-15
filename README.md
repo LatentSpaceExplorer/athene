@@ -4,12 +4,22 @@ Athene is a voice-controlled AI assistant that can manage your tasks, read to yo
 
 ## Features
 
-- Voice recognition and processing 
+- Voice recognition and processing with dual input methods:
+  - Hold-to-record button in the application window
+  - Global hotkey (Alt+Y) that works system-wide
 - Natural language task management with persistent storage
 - Text-to-speech responses using [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)
 - Read text from clipboard
 - General conversation
 - Modular plugin system for easy extension
+
+## Usage
+
+To record a message, you can either:
+- Hold the "Hold to Record" button in the application window
+- Hold Alt+Y anywhere on your system (works even when Athene is not focused)
+
+Release the button or key combination to process and receive a response.
 
 ## Prerequisites
 

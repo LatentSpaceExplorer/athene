@@ -1,6 +1,7 @@
 import tkinter as tk
 import threading
 import asyncio
+import keyboard
 
 
 class VoiceAssistantGUI:
@@ -15,39 +16,63 @@ class VoiceAssistantGUI:
         self.speech_generator = speech_generator
         self.audio_player = audio_player
         
+        # State tracking
+        self.is_recording = False
+        
         # Create event loop
         self.loop = asyncio.new_event_loop()
         
         self.setup_gui()
         self.setup_async_loop()
+        self.setup_global_hotkey()
     
     def setup_gui(self):
         self.record_button = tk.Button(self.window, text="Hold to Record")
         self.record_button.pack(pady=20)
         
-        self.status_label = tk.Label(self.window, text="Ready")
+        self.status_label = tk.Label(self.window, text="Ready - Hold Alt+Y to record")
         self.status_label.pack(pady=10)
         
+        # Mouse bindings
         self.record_button.bind('<ButtonPress-1>', self.start_recording)
         self.record_button.bind('<ButtonRelease-1>', self.stop_recording)
+    
+    def setup_global_hotkey(self):
+        # Register Alt+Y
+        keyboard.on_press_key("y", self.handle_key_press, suppress=False)
+        keyboard.on_release_key("y", self.handle_key_release, suppress=False)
+    
+    def handle_key_press(self, event):
+        if keyboard.is_pressed('alt') and not self.is_recording:
+            self.start_recording(None)
+    
+    def handle_key_release(self, event):
+        if self.is_recording:
+            self.stop_recording(None)
     
     def setup_async_loop(self):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
     
     def start_recording(self, event):
-        self.recorder.start()
-        self.status_label.config(text="Recording...")
-        
-        self.record_thread = threading.Thread(target=self.recorder.record)
-        self.record_thread.start()
+        if not self.is_recording:
+            self.is_recording = True
+            self.recorder.start()
+            self.status_label.config(text="Recording...")
+            self.record_button.config(relief=tk.SUNKEN)
+            
+            self.record_thread = threading.Thread(target=self.recorder.record)
+            self.record_thread.start()
 
     def stop_recording(self, event):
-        self.recorder.stop()
-        self.status_label.config(text="Processing...")
-        
-        # Run the async processing in the event loop
-        asyncio.run_coroutine_threadsafe(self.process_recording(), self.loop)
+        if self.is_recording:
+            self.is_recording = False
+            self.recorder.stop()
+            self.status_label.config(text="Processing...")
+            self.record_button.config(relief=tk.RAISED)
+            
+            # Run the async processing in the event loop
+            asyncio.run_coroutine_threadsafe(self.process_recording(), self.loop)
 
     def update_status(self, text):
         self.status_label.config(text=text)
@@ -78,7 +103,7 @@ class VoiceAssistantGUI:
                 self.audio_player.play(samples, sample_rate)
                 print("[Audio] Finished playing")
                 
-                self.window.after(0, self.update_status, "Ready")
+                self.window.after(0, self.update_status, "Ready - Hold Alt+Y to record")
                 
             except Exception as e:
                 print(f"[Error] An error occurred: {str(e)}")
